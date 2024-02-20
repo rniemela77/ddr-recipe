@@ -14,21 +14,25 @@
       </div>
     </div>
 
+    <iframe v-if="youtubeUrl" width="560" height="315" :src="youtubeUrl" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
     <h2>Ingredients</h2>
-    <ul>
-      <li v-for="ingredient in ingredientsList">{{ ingredient }}</li>
-    </ul>
+    <span class="ingredients" v-html="richtextToHTML($page.recipes.edges[0]['node']['ingredientsList'])"></span>
 
     <h2>Steps</h2>
-    <ol>
-      <li v-for="step in stepsList">{{ step }}</li>
-    </ol>
+    <span class="steps" v-html="richtextToHTML($page.recipes.edges[0]['node']['steps'])"></span>
   </Layout>
 </template>
 
 <script>
+import { documentToHtmlString } from '@contentful/rich-text-html-renderer'
+
 export default {
+  methods: {
+    richtextToHTML (content) {
+      return documentToHtmlString(content)
+    }
+  },
   data() {
     return {
       slug: this.$route.params.slug
@@ -36,37 +40,13 @@ export default {
   },
   computed: {
     servings() {
-      // return this.$page.recipes.edges[0]?.node?.servings
+      return this.$page.recipes.edges[0]?.node?.servings
     },
     cookTime() {
-      // return this.$page.recipes.edges[0]?.node?.cookTime
+      return this.$page.recipes.edges[0]?.node?.cookTime
     },
     prepTime() {
-      // return this.$page.recipes.edges[0]?.node?.prepTime
-    },
-    ingredientsList() {
-      let list = [];
-      // list.push(
-      this.$page.recipes.edges[0]['node']['ingredientsList'].content[0].content.forEach(x => {
-        list.push(x.content[0].content[0].value);
-        // list.push(x.content[0].content[0].value);
-      })
-      // this.$page.recipes.edges[0].node.ingredientsList.content[0].content.forEach(x => {
-      // list.push(x.content[0].content[0].value);
-      // })
-      return list;
-    },
-    stepsList() {
-      let list = [];
-
-      this.$page.recipes.edges[0]['node']['steps'].content[0].content.forEach(x => {
-        list.push(x.content[0].content[0].value);
-        // list.push(x.content[0].content[0].value);
-      })
-      // this.$page.recipes.edges[0]['node']['steps']['content'][0]['content'].forEach(x => {
-      // list.push(x.content[0]['content'][0]['value']);
-      // })
-      return list;
+      return this.$page.recipes.edges[0]?.node?.prepTime
     },
     youtubeUrl() {
       return this.$page.recipes.edges[0]['node']['youtubeUrl']
@@ -152,10 +132,11 @@ p {
   font-weight: 500;
 }
 
-li {
-  margin: 1rem 0;
+.ingredients, .steps {
+  margin: 1rem 0 0 2rem;
+  line-height: 2;
   font-size: 1.2rem;
-  margin-left: 2rem;
+  display: block;
 }
 
 i {

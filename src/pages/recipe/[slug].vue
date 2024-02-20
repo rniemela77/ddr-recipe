@@ -1,7 +1,7 @@
 <template>
   <Layout v-if="$page.recipes.edges.length">
     <h1>{{ $page.recipes.edges[0].node.title }}</h1>
-    <img :src="$page.recipes.edges[0].node.image.file.url" alt="Recipe Image" width="300" />
+    <g-img :src="$page.recipes.edges[0].node.image.file.url" alt="Recipe Image" width="300" />
   </Layout>
 </template>
 

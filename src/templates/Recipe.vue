@@ -2,19 +2,34 @@
   <Layout v-if="$page.recipes.edges.length">
     <g-image :src="$page.recipes.edges[0].node.image.file.url" alt="Recipe Image" />
     <h1>{{ $page.recipes.edges[0]['node']['title'] }}</h1>
-    <i>{{ $page.recipes.edges[0]['node']['shortDescription'] }}</i>
-
     <div class="flex">
-      <p>{{ $page.recipes.edges[0]['node']['description'] }}</p>
+      <i>{{ $page.recipes.edges[0]['node']['shortDescription'] }}</i>
 
-      <div class="details">
-        <p v-if="servings">Servings: {{ servings }}</p>
-        <p v-if="cookTime">Cook Time: {{ cookTime }}</p>
+      <div class="details" v-if="prepTime || cookTime || servings">
+        <svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M12 7V12H15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+            stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
         <p v-if="prepTime">Prep Time: {{ prepTime }}</p>
+        <p v-if="cookTime">Cook Time: {{ cookTime }}</p>
+        <p v-if="servings">Servings: {{ servings }}</p>
       </div>
+
     </div>
 
-    <iframe v-if="youtubeUrl" width="560" height="315" :src="youtubeUrl" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+    <p>{{ $page.recipes.edges[0]['node']['description'] }}</p>
+
+
+
+
+    <template v-if="youtubeUrl.length">
+      <h2>Video</h2>
+      <div id="player"></div>
+    </template>
+
 
     <h2>Ingredients</h2>
     <span class="ingredients" v-html="richtextToHTML($page.recipes.edges[0]['node']['ingredientsList'])"></span>
@@ -29,7 +44,7 @@ import { documentToHtmlString } from '@contentful/rich-text-html-renderer'
 
 export default {
   methods: {
-    richtextToHTML (content) {
+    richtextToHTML(content) {
       return documentToHtmlString(content)
     }
   },
@@ -59,7 +74,25 @@ export default {
     }
   },
   mounted() {
-    //
+    // load youtube video
+    const tag = document.createElement('script')
+    tag.src = 'https://www.youtube.com/iframe_api'
+    const firstScriptTag = document.getElementsByTagName('script')[0]
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag)
+
+    window.onYouTubeIframeAPIReady = () => {
+      new YT.Player('player', {
+        height: '390',
+        width: '100%',
+        // get only the video id from the youtube url
+        videoId: this.youtubeUrl.split('v=')[1],
+        events: {
+          onReady: (event) => {
+            event.target.playVideo()
+          }
+        }
+      })
+    }
   }
 }
 </script>
@@ -97,13 +130,34 @@ query($slug: String) {
 .flex {
   display: flex;
   align-items: start;
+  flex-wrap: wrap;
+}
+
+.flex i {
+  flex: 1;
 }
 
 .details {
-  margin-left: 2rem;
-  flex: 1;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.7);
   padding: 1rem;
+  text-align: center;
+  margin: 0 auto;
+  border-radius: 5px;
+
+  position: relative;
+}
+
+.details svg {
+  width: 2rem;
+  height: 2rem;
+  position: absolute;
+  top: -1rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+svg * {
+  stroke: #bb5a5a;
 }
 
 .details p {
@@ -132,7 +186,12 @@ p {
   font-weight: 500;
 }
 
-.ingredients, .steps {
+iframe {
+  max-width: 100%;
+}
+
+.ingredients,
+.steps {
   margin: 1rem 0 0 2rem;
   line-height: 2;
   font-size: 1.2rem;

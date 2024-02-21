@@ -1,9 +1,9 @@
 <template>
   <div class="layout">
     <header class="header">
-      <strong>
+      <h1>
         <g-link to="/" class="logo">Darling Dinner's Ready</g-link>
-      </strong>
+      </h1>
       <nav class="nav">
         <!-- <g-link class="nav__link" to="/">Home</g-link> -->
         <!-- <g-link class="nav__link" to="/about">About</g-link> -->
@@ -28,9 +28,12 @@
 </template>
 
 <style>
+h1 {
+  margin: 2rem 0 1rem;
+  line-height: 1;
+}
 .fade-enter-active {
   transition: all .7s ease-in-out;
-
 }
 
 .fade-enter {
@@ -50,7 +53,7 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 100dvh;
   background: linear-gradient(#ffffff, #ffd3cb);
   z-index: -1;
 }
@@ -68,26 +71,36 @@ a {
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  height: 80px;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .nav__link {
   margin-left: 20px;
 }
-
-.logo {
-  font-size: 1.5rem;
-  color: #333;
-  padding: 10px;
-  text-decoration: none;
-  font-weight: bold;
+.logo, h1, h2 {
   font-family: cursive;
   letter-spacing: 0px;
   transform: skew(-5deg);
+  text-shadow: 0px 0px 5px #f74d4d80;
+  display: block;
+  color: #936464;
+}
+h2 {
+  border-bottom: 1px solid #ca1d1d80;
+  margin: 2rem 0 1rem;
+  line-height: 1;
+}
+.logo {
+  color: #333;
+  padding: 5rem 0 1rem;
+  text-decoration: none;
+  letter-spacing: 0px;
+  transform: skew(-5deg);
+  text-shadow: 0px 0px 5px #f74d4d80;
   display: block;
 }
 

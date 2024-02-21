@@ -1,6 +1,8 @@
 <template>
-  <Layout v-if="$page.recipes.edges.length">
-    <g-image :src="$page.recipes.edges[0].node.image.file.url" alt="Recipe Image" />
+  <Layout v-if="$page.recipes">
+    <div class="image">
+      <g-image :src="$page.recipes.edges[0].node.image.file.url" alt="Recipe Image" />
+    </div>
     <h1>{{ $page.recipes.edges[0]['node']['title'] }}</h1>
     <div class="flex">
       <i>{{ $page.recipes.edges[0]['node']['shortDescription'] }}</i>
@@ -25,9 +27,9 @@
 
 
 
-    <template v-if="youtubeUrl.length">
+    <template v-if="$page.recipes && youtubeUrl.length">
       <h2>Video</h2>
-      <div id="player"></div>
+      <div ref="player"></div>
     </template>
 
 
@@ -43,14 +45,10 @@
 import { documentToHtmlString } from '@contentful/rich-text-html-renderer'
 
 export default {
-  methods: {
-    richtextToHTML(content) {
-      return documentToHtmlString(content)
-    }
-  },
   data() {
     return {
-      slug: this.$route.params.slug
+      slug: this.$route.params.slug,
+      player: null,
     }
   },
   computed: {
@@ -64,7 +62,7 @@ export default {
       return this.$page.recipes.edges[0]?.node?.prepTime
     },
     youtubeUrl() {
-      return this.$page.recipes.edges[0]['node']['youtubeUrl']
+      return this.$page['recipes'].edges[0]['node']['youtubeUrl'].split('v=')[1] || ''
     },
     steps() {
       return this.$page.recipes.edges[0]['node']['steps']
@@ -73,25 +71,31 @@ export default {
       return this.$page.recipes.edges[0]['node']['endNotes']
     }
   },
-  mounted() {
-    // load youtube video
-    const tag = document.createElement('script')
-    tag.src = 'https://www.youtube.com/iframe_api'
-    const firstScriptTag = document.getElementsByTagName('script')[0]
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag)
-
-    window.onYouTubeIframeAPIReady = () => {
-      new YT.Player('player', {
+  methods: {
+    richtextToHTML(content) {
+      return documentToHtmlString(content)
+    },
+    appendVideo() {
+      this.player = new YT.Player(this.$refs.player, {
         height: '390',
-        width: '100%',
-        // get only the video id from the youtube url
-        videoId: this.youtubeUrl.split('v=')[1],
-        events: {
-          onReady: (event) => {
-            event.target.playVideo()
-          }
-        }
+        width: '640',
+        videoId: this.youtubeUrl,
       })
+    }
+  },
+  mounted() {
+    // remove current video to avoid multiple videos
+    const iframe = document.querySelector('iframe')
+    if (iframe) {
+      iframe.remove()
+    }
+
+    if (this.youtubeUrl.length) {
+      const tag = document.createElement('script')
+      tag.src = 'https://www.youtube.com/iframe_api'
+      const firstScriptTag = document.getElementsByTagName('script')[0]
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag)
+      window.onYouTubeIframeAPIReady = this.appendVideo()
     }
   }
 }
@@ -166,7 +170,6 @@ svg * {
 }
 
 .layout {
-  max-width: 800px;
   width: 100%;
   background: rgba(255, 255, 255, 0.5);
 }
@@ -216,5 +219,12 @@ img {
   width: 100%;
   height: auto;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.image {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 2rem;
 }
 </style>

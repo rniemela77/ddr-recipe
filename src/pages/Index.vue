@@ -1,13 +1,13 @@
 <template>
   <Layout>
     <!-- <g-image alt="Example image" src="~/favicon.png" width="135" /> -->
-    <h1>Recipes</h1>
+    <h2>Recipes</h2>
 
     <div class="recipe-list">
       <g-link v-for="edge in $page.posts.edges" :key="edge.node.id" :to="`recipe/${edge.node.slug}`" class="card">
         <g-image :key="edge.node.id" :src="edge.node.image.file.url" :alt="edge.node.title" width="300" class="image" />
 
-        <b>{{ edge.node.title }}</b>
+        <h3>{{ edge.node.title }}</h3>
         <i>{{ edge.node.shortDescription }}</i>
       </g-link>
     </div>
@@ -84,10 +84,9 @@ query {
   object-fit: contain;
 }
 
-b {
+h3 {
   background: white;
   padding: 1rem;
-  font-size: 1.3rem;
   background: rgba(255, 255, 255, 0.499);
   color: rgb(134, 95, 95);
   text-shadow: 0px -1px 1.5px rgba(255, 0, 0, 0.2);

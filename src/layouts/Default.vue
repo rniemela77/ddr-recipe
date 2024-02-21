@@ -21,7 +21,7 @@
     <div class="footer">
       <p>&copy; {{ new Date().getFullYear() }} Darling Dinner's Ready
         <br>
-        <a href="mailto:rvniemela@hotmail.com">rvniemela@hotmail.com</a>
+        Developed by: <a href="mailto:rvniemela@hotmail.com">rvniemela@hotmail.com</a>
       </p>
     </div>
   </div>

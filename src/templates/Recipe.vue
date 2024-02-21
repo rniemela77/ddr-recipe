@@ -5,7 +5,6 @@
     </div>
     <h1>{{ $page.recipes.edges[0]['node']['title'] }}</h1>
     <div class="flex">
-      <i>{{ $page.recipes.edges[0]['node']['shortDescription'] }}</i>
 
       <div class="details" v-if="prepTime || cookTime || servings">
         <svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none">
@@ -18,6 +17,7 @@
         <p v-if="servings">Servings: {{ servings }}</p>
       </div>
 
+      <i>{{ $page.recipes.edges[0]['node']['shortDescription'] }}</i>
     </div>
 
 
@@ -76,6 +76,11 @@ export default {
       return documentToHtmlString(content)
     },
     appendVideo() {
+      // if YT is not defined, wait for it to be defined
+      if (typeof YT === 'undefined') {
+        setTimeout(this.appendVideo, 100)
+        return
+      }
       this.player = new YT.Player(this.$refs.player, {
         height: '390',
         width: '640',
@@ -135,6 +140,8 @@ query($slug: String) {
   display: flex;
   align-items: start;
   flex-wrap: wrap;
+  gap: 2vw;
+  justify-content: center;
 }
 
 .flex i {
@@ -204,8 +211,9 @@ iframe {
 i {
   font-size: 1rem;
   margin: 1rem 0;
-  border-left: 5px solid #333;
-  padding-left: 1rem;
+  border-left: 1px solid #3333337d;
+  padding: 1rem;
+  line-height: 1;
   display: block;
 }
 
